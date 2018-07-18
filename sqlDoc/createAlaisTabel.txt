@@ -1,0 +1,11 @@
+CREATE TABLE `aliasinfo` (
+  `id` int(255) unsigned NOT NULL AUTO_INCREMENT,
+  `buyer` varchar(255) DEFAULT NULL,
+  `time` varchar(255) DEFAULT NULL,
+  `buyCount` int(255) DEFAULT NULL,
+  `aliasId` varchar(255) DEFAULT NULL,
+  `price` decimal(8,2) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=963 DEFAULT CHARSET=utf8;
+
