@@ -22,6 +22,7 @@ class SellInfoController():
         self.__cookies = cookies
         self.initData()
         return
+        
     def initData(self):
 
         return
