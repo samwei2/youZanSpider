@@ -5,6 +5,9 @@ from mySqlController import SqlOperationController
 import pymysql.cursors
 import json
 
+from youZan.zuiHeiKeJiConfig import ZuiHeiKeJiConfig
+from youZan.chaPingConfig import ChaPingConfig
+
 # 全局头
 headers = {
     "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36 QIHU 360SE"
@@ -31,8 +34,13 @@ allPageList = []
 beginPage = 1
 endPage = 49
 
+#取得最黑科技的数据
+# sourceVo = ZuiHeiKeJiConfig()
+#差评的数据
+sourceVo = ChaPingConfig()
+
 for page in range(1,49):
-    url = "https://h5.youzan.com/v2/showcase/goods/allgoods?kdt_id=16975645&p=" + str(page)
+    url = sourceVo.getUrlByPage(page)
     aliasIds = goodListController.openGoodsUrl(url) #拿到当前页所有的商品信息列表
     #保存商品销售数据
     aliasTitleDic = {} # 商品名称字典
