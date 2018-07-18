@@ -27,7 +27,7 @@ class SellInfoController():
 
 		return
 
-	def checkAliasInfo(self, aliasId, allOrOne=1):
+	def checkAliasInfo(self, aliasId, aliasTitle, allOrOne=1):
 		self.__goodsId = aliasId
 		# __page = page
 		# if page==null:
@@ -49,7 +49,6 @@ class SellInfoController():
 			s = json.loads(res)
 			print("html ..decode end")
 
-
 			dataList = s['data']['list'] 
 			self.__has_next = s['data']['has_next']
 			print("hes_next..", self.__has_next)
@@ -59,9 +58,17 @@ class SellInfoController():
 				pass
 
 			# print(s)
+			# 
+			index = 0
 			for line in dataList:
+				lineData = {}
 				# print line
-				self.__pageArr.append(line)	
+				index = index + 1
+				lineData['uid'] = aliasId + "&p"+ str(self.__page) +"&i"+ str(index)
+				lineData['data'] = line
+				lineData['title'] = aliasTitle #传一个商品名称进来
+				self.__pageArr.append(lineData)	
+				# print(lineData['uid'])
 			pass
 
 			self.__page = self.__page + 1

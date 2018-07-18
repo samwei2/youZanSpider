@@ -1,6 +1,7 @@
 #coding=utf-8
 from allGoodsList import GoodListController
 from aliasSellInfo import SellInfoController
+from mySqlController import SqlOperationController
 import pymysql.cursors
 import json
 
@@ -23,79 +24,31 @@ goodListController = GoodListController(headers)
 
 sellInfoController = SellInfoController(headers, cookies)
 
-#商品道具列表
-aliasIds = {}
-aliasIds['id'], aliasIds['title'] = goodListController.openGoodsUrl("https://h5.youzan.com/v2/allgoods/16975645?reft=1531274513986&spm=f70430959")
+sqlOperationController = SqlOperationController()
 
-# 单页商品数目
-print(len(aliasIds['id']))
+#商品道具列表
+aliasIds = goodListController.openGoodsUrl("https://h5.youzan.com/v2/allgoods/16975645?reft=1531274513986&spm=f70430959") #拿到当前页所有的商品信息列表
 
 #保存商品销售数据
-dic = {}
-dicKey = {}
-index = 0
-for id in aliasIds['id']:
-	dicKey[index] = {}
-	dic[index], dicKey[index]['total'] = sellInfoController.checkAliasInfo(id)  #单个商品 购买的详细信息
-	dicKey[index]['id'] = id
-	dicKey[index]['title'] = aliasIds['title'][index] #id 和 title 的索引是一致的
-	print(dicKey[index]['title'],"==============>",id, dicKey[index]['total'])
-	index = index+1
+aliasTitleDic = {} # 商品名称字典
+sellInfoDic = {}  # 订单信息字典
+sellTotalDic = {}  # 产品销量字典
+# index = 0
+# oneAlias = aliasIds[3]
+for oneAlias in aliasIds:
+	id = oneAlias[u'alias']
+	title = oneAlias[u'title']
+	pageArr, total= sellInfoController.checkAliasInfo(id, title)  #单个商品 购买的详细信息
+	aliasTitleDic[id] = title
+	sellInfoDic[id] = pageArr
+	sellTotalDic[id] = total
 pass
 
+print(" goods parser completed, ready connectSql....................")
 
+# 链接数据库
+sqlOperationController.connectSql()
 
+sqlOperationController.saveAliasInfo(aliasTitleDic, sellInfoDic, sellTotalDic)
 
-# 连接数据库
-connect = pymysql.Connect(
-    host='localhost',
-    port=3306,
-    user='root',
-    passwd='',
-    db='alias',
-    charset='utf8'
-)
-
-# 获取游标
-cursor = connect.cursor()
-
-# dicKeyData = dicKey[1]
-# dicData = dic[1][0]
-
-# print(type(dicData))
-# print(dicData[u'update_time'])
-index = 0
-for a in dic:
-	# 一件商品的数据
-	indexData = dic[a]
-	# print(a, indexData)
-	for b in indexData:
-		# 详细信息
-		infoData = b
-		titleData = dicKey[a]
-		fff = float(infoData[u'item_price'])
-		# print( type(infoData[u'item_price']) , fff, type(fff) )
-		# 插入数据
-		sql = "INSERT INTO aliasInfo (buyer, time, buyCount, aliasId, price, title) VALUES ('%s', '%s', '%s', '%.2f', '%s')"
-		data = (infoData[u'nickname'], infoData[u'update_time'], infoData[u'item_num'], titleData['id'], fff, (titleData[u'title']).decode('unicode_escape'))
-		cursor.execute(sql % data)
-		connect.commit()
-		index = index+1
-		if index>8:
-			index = 0
-			pass
-		str = ""
-
-		for x in xrange(1,index):
-			str = str + "........................."
-			pass
-
-		print('成功插入'+str)
-		pass
-	pass
-
-print('成功插入')#, cursor.rowcount, '条数据')
-
-# 关闭连接
-cursor.close()
-connect.close()
+sqlOperationController.closeLinkSql()

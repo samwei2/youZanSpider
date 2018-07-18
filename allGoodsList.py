@@ -32,8 +32,26 @@ class GoodListController():
 
 		script = soup.body.script
 
-		sou = re.findall(r'\"alias\":\"(\w+)', script.string)
-		title = re.findall(r'\"title":\"(.+?)\"', script.string)
+		lala = re.findall(r'var _showcase_components =\s+((.*?])+)', script.string)
+
+		if lala:
+			tt = lala[0][0].decode('utf-8')
+			# print(type(lala[0][0]))
+
+			hh = json.loads(tt)
+			# print(hh[0],type(hh[0]))
+			goods = hh[0][u'goods'] #当前页中所有的道具信息
+			
+			# for x in goods:
+			# 	print("\r\n")
+			# 	print(x[u'alias'], x[u'title'])
+			# pass
+
+
+		# sou = re.findall(r'\"alias\":\"(\w+)', script.string)
+		# sou = self.delRepetition(sou)
+		# title = re.findall(r'\"title":\"(.+?)\"', script.string)
+		# title = self.delRepetition(title)
 
 		# for x in sou:
 		# 	print x
@@ -44,7 +62,16 @@ class GoodListController():
 		# 	pass
 
 		driver.quit()
-		return sou, title
+		return goods
+
+	# 去掉数组重复的项，并保留原来的顺序
+	def delRepetition(self, arr):
+		newArr = []
+		for x in arr:
+			if x not in newArr:
+				newArr.append(x)
+		pass
+		return newArr
 
 
 
