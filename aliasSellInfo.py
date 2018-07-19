@@ -14,10 +14,6 @@ class SellInfoController():
     __has_next = True
 
     def __init__(self, headers, cookies):
-        # print(" hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
-        # print(headers)
-        # print(cookies)
-
         self.__headers = headers
         self.__cookies = cookies
         self.initData()
@@ -29,14 +25,10 @@ class SellInfoController():
 
     def checkAliasInfo(self, aliasId, aliasTitle, allOrOne=1):
         self.__goodsId = aliasId
-        # __page = page
-        # if page==null:
         self.__page = 1 #从第一页开始抓数据
         self.__pageArr = []
         self.__total = 0
         self.__has_next = True
-        #   pass
-        # print(self.__urlPath + self.__goodsId + self.__pageTab + str(self.__page))
 
         url = ""
         while self.__has_next==True:

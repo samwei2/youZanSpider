@@ -40,78 +40,78 @@ class SqlOperationController():
     pass
 
 
-def saveAliasInfo(self, aliasTitleDic, sellInfoDic, sellTotalDic):
-    # 获取游标
-    self.__cursor = self.__connect.cursor()
-    index = 0
+    def saveAliasInfo(self, aliasTitleDic, sellInfoDic, sellTotalDic):
+        # 获取游标
+        self.__cursor = self.__connect.cursor()
+        index = 0
 
-    for key in sellInfoDic:
-        # print(sellInfoDic[key])
-        # # 一件商品的数据
-        sellInfoList = sellInfoDic[key]
-        if sellInfoList is None or len(sellInfoList) == 0:
-            continue
+        for key in sellInfoDic:
+            # print(sellInfoDic[key])
+            # # 一件商品的数据
+            sellInfoList = sellInfoDic[key]
+            if sellInfoList is None or len(sellInfoList) == 0:
+                continue
 
-        for sellInfo in sellInfoList:
-            infoData = sellInfo['data']
-            dealUid = sellInfo['uid']
-            title = sellInfo['title']  # .decode('unicode_escape')
-            data = (infoData[u'nickname'], infoData[u'update_time'], infoData[u'item_num'], dealUid, title,
-                    infoData[u'item_price'])
-            # print("ready write data", data)
-            # print(dealUid, "is ready write to sql")
+            for sellInfo in sellInfoList:
+                infoData = sellInfo['data']
+                dealUid = sellInfo['uid']
+                title = sellInfo['title']  # .decode('unicode_escape')
+                data = (infoData[u'nickname'], infoData[u'update_time'], infoData[u'item_num'], dealUid, title,
+                        infoData[u'item_price'])
+                # print("ready write data", data)
+                # print(dealUid, "is ready write to sql")
 
-            bHasData = False
-            try:
-                sql = "SELECT aliasId FROM aliasInfo WHERE aliasId = '%s'"
-                uidData = (dealUid)
-                self.__cursor.execute(sql % uidData)
-                bHasData = len(self.__cursor.fetchall()) > 0
-                pass
-            except Exception as e:
-                print("SELECT error", e.message)
-                pass
-
-            if bHasData is False:
+                bHasData = False
                 try:
-                    # 插入数据
-                    sql = "INSERT INTO aliasInfo (buyer, time, buyCount, aliasId, title, price) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
-                    self.__cursor.execute(sql % data)
-                    self.__connect.commit()
-
-                    index = index + 1
-                    if index > 8:
-                        index = 0
-                        pass
-                    str = ""
-
-                    for x in xrange(1, index):
-                        str = str + "..."
-                        pass
-
-                    print('成功插入' + str)
+                    sql = "SELECT aliasId FROM aliasInfo WHERE aliasId = '%s'"
+                    uidData = (dealUid)
+                    self.__cursor.execute(sql % uidData)
+                    bHasData = len(self.__cursor.fetchall()) > 0
                     pass
                 except Exception as e:
-                    print("INSERT error", e.message)
+                    print("SELECT error", e.message)
                     pass
-                    print("sql not data ,we will write in ....")
+
+                if bHasData is False:
+                    try:
+                        # 插入数据
+                        sql = "INSERT INTO aliasInfo (buyer, time, buyCount, aliasId, title, price) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
+                        self.__cursor.execute(sql % data)
+                        self.__connect.commit()
+
+                        index = index + 1
+                        if index > 8:
+                            index = 0
+                            pass
+                        str = ""
+
+                        for x in xrange(1, index):
+                            str = str + "..."
+                            pass
+
+                        print('成功插入' + str)
+                        pass
+                    except Exception as e:
+                        print("INSERT error", e.message)
+                        pass
+                        print("sql not data ,we will write in ....")
+                    pass
+                else:
+                    print("data is has , we will updata...")
+                # sql = "UPDATE aliasInfo  set buyer = '%s'"
+                # self.__cursor.execute(sql % ("aaa"))
+                # self.__connect.commit()
                 pass
-            else:
-                print("data is has , we will updata...")
-            # sql = "UPDATE aliasInfo  set buyer = '%s'"
-            # self.__cursor.execute(sql % ("aaa"))
-            # self.__connect.commit()
-            pass
 
-        print('录入结束')
-    pass
+            print('录入结束')
+        pass
 
 
-# 关闭连接
-def closeLinkSql(self):
-    self.__cursor.close()
-    self.__connect.close()
-    pass
+    # 关闭连接
+    def closeLinkSql(self):
+        self.__cursor.close()
+        self.__connect.close()
+        pass
 
     # indexData = dic[a]
     # 	# dealUid = dic[a]
