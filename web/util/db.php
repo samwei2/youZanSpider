@@ -42,6 +42,31 @@ class db
      * *当前查询是否开户了事物处理
      */
     protected static $is_commit = false;
+    
+    /*符合条件的销售数据
+     * @param $queryCon 查询条件列表
+    **/
+    public static function querySaleList($queryCon = false) {
+        $sql = "SELECT * FROM `" . DB_TABLE_MALL . "`";
+        if ($queryCon != false && count($queryCon) > 0) {
+            $sql = $sql . " where";
+            $index = 0;
+            foreach ($queryCon as $con) {
+                if ($index > 0) {
+                    $sql = $sql . " and";
+                }
+                $sql = $sql . " `" . $con["key"] . "` like \"%" . $con["value"] . "%\"";
+                $index = $index + 1;
+            }
+        }
+        $sql = $sql . ";";
+        $queryResult = self::query($sql);
+        if (!$queryResult) {
+            return false;
+        }
+        $saleList = self::fetch_all("id", true);
+        return $saleList;
+    }
 
     /**
      * *执行查询
@@ -49,9 +74,8 @@ class db
      * @param  $sql [string]:SQL查询语句
      * @return boolean 成功赋值并返回self::$result; 失败返回 false 如果有事务则回滚
      */
-    public static function query($sql, $dbParam)
+    public static function query($sql)
     {
-        self::connect($dbParam);
         self::$sql = $sql;
         self::$result = self::$mysqli->query($sql);
         if (self::$mysqli->error) {
@@ -174,7 +198,7 @@ class db
             }
         }
         self::free_result();
-        return ($regI > -1) ? $rows : false;
+        return ($regI != -1) ? $rows : false;
     }
 
     /**
@@ -333,9 +357,8 @@ class db
     /**
      * *开始事物处理,关闭MYSQL的自动提交模式
      */
-    public static function commit_begin($dbParam)
+    public static function commit_begin()
     {
-        self::connect($dbParam);
         self::$is_error = false;
         self::$mysqli->autocommit(false); //使用事物处理,不自动提交
         self::$is_commit = true;
@@ -377,25 +400,24 @@ class db
      * @param string 数据库名称
      * @return boolean
      */
-    public static function select_db($dbname, $dbParam)
+    public static function select_db($dbname)
     {
-        self::connect($dbParam);
         return self::$mysqli->select_db($dbname);
     }
 
     /**
      * *连接Mysql
      */
-    protected static function connect($dbParam)
+    public static function connect()
     {
         if (is_null(self::$mysqli)) {
-            self::$mysqli = new mysqli($dbParam["host"], $dbParam["user"], $dbParam["pass"], $dbParam["name"], $dbParam["port"]);
+            self::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
             if (mysqli_connect_errno()) {
                 $error = sprintf("Database Connect failed:%s\r\n", mysqli_connect_error());
                 self::log($error);
                 exit();
             } else {
-                self::$mysqli->query("SET character_set_connection=" . $dbParam["charset"] . ", character_set_results=" . $dbParam["charset"] . ", character_set_client=binary");
+                self::$mysqli->query("SET character_set_connection=" . DB_CHARSET . ", character_set_results=" . DB_CHARSET . ", character_set_client=binary");
             }
         }
     }
