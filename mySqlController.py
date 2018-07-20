@@ -4,7 +4,7 @@ import pymysql.cursors
 
 class SqlOperationController():
     """docstring for sqlOperation"""
-
+    __cursor = None
     def __init__(self):
         pass
 
@@ -39,8 +39,15 @@ class SqlOperationController():
         self.__connect.commit()
     pass
 
+    # 存储所有订单信息
+    def saveAllAliasInfo(self, allPageList):
+        for onePageData in allPageList:
+            sellInfoDic = onePageData['sellInfoDic']
+            self.saveAliasInfo(sellInfoDic)
+            pass
+        pass
 
-    def saveAliasInfo(self, aliasTitleDic, sellInfoDic, sellTotalDic):
+    def saveAliasInfo(self, sellInfoDic):
         # 获取游标
         self.__cursor = self.__connect.cursor()
         index = 0
@@ -106,52 +113,95 @@ class SqlOperationController():
             print('录入结束')
         pass
 
+    # 存储所有商品价格
+    def saveAllAliasPriceInfo(self, allPageList):
+        # print(allPageList)
+        for onePageData in allPageList:
+            self.saveAliasPrice(onePageData)
+            pass
+        pass
+
+    #单页的商品价格保存
+    def saveAliasPrice(self, onePageData):
+        # 获取游标
+        self.__cursor = self.__connect.cursor()
+        index = 0
+        for oneAlias in onePageData:
+            aliasId = oneAlias['id']
+            sql = "INSERT INTO alias_price (aliasId, title, price, total, link, the_last_buy) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
+            data = (aliasId, oneAlias['title'], oneAlias['price'], oneAlias['total'], oneAlias['link'], oneAlias['the_last_buy'])
+            insertCode = self.sqlInsert(data, sql, "alias_price", "aliasId")
+
+            if insertCode==0:
+                index = index + 1
+                if index > 8:
+                    index = 0
+                    pass
+
+                str = ""
+                for x in xrange(1, index):
+                    str = str + "..."
+                    pass
+
+                print('成功插入' + str)
+            else:
+                index = 0
+                print('插入失败 code:', insertCode)
+                pass
+            pass
+        pass
+
+
+    # 插入数据 data:要插入的数据,   sql:sql 语句
+    def sqlInsert(self, data, sql, tableName, tableKey):
+        code = 0
+        bHasData = False
+        try:
+            selectSql = "SELECT " + tableKey + " FROM "+ tableName + " WHERE " + tableKey + " = '%s'"
+            uidData = data[0]
+            # print(selectSql, uidData)
+            self.__cursor.execute(selectSql % uidData)
+            bHasData = len(self.__cursor.fetchall()) > 0
+            pass
+        except Exception as e:
+            print("SELECT error", e.message, selectSql)
+            code = 1
+            pass
+
+        if bHasData is False:
+            try:
+                # 插入数据
+                # sql = "INSERT INTO aliasInfo (buyer, time, buyCount, aliasId, title, price) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
+                self.__cursor.execute(sql % data)
+                self.__connect.commit()
+                pass
+            except Exception as e:
+                code = 2
+                print("INSERT error", e.message)
+                print("sql not data ,we will write in ....")
+                pass
+        else:
+            print("data is has , we will updata...")
+            code = 3
+            # sql = "UPDATE aliasInfo  set buyer = '%s'"
+            # self.__cursor.execute(sql % ("aaa"))
+            # self.__connect.commit()
+            pass
+     
+        return code
+        pass
+
 
     # 关闭连接
     def closeLinkSql(self):
-        self.__cursor.close()
-        self.__connect.close()
+        try:
+            if  self.__cursor:
+                self.__cursor.close()
+                pass
+            
+            self.__connect.close()
+            pass
+        except Exception as e:
+            print("closeLinkSql error", e.message)
+            pass
         pass
-
-    # indexData = dic[a]
-    # 	# dealUid = dic[a]
-    # 	# print("================================>", dic[a])
-    # 	# print(a, indexData)
-    # 	for b in indexData:
-    # 		# 详细信息
-    # 		infoData = b['data']
-    # 		dealUid  = b['uid']
-    # 		titleData = dicKey[a]
-
-    # 		#查找数据
-    # 		try:
-    # 			sql = ""
-    # 			pass
-    # 		except Exception as e:
-    # 			print(e.message)
-    # 			pass
-
-    # 		# 插入数据
-    # 		try:
-    # 			sql = "INSERT INTO aliasInfo (buyer, time, buyCount, aliasId, title, price) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
-    # 			data = (infoData[u'nickname'], infoData[u'update_time'], infoData[u'item_num'], dealUid, (titleData[u'title']).decode('unicode_escape'), infoData[u'item_price'])
-    # 			self.__cursor.execute(sql % data)
-    # 			self.__connect.commit()
-    # 			pass
-    # 		except Exception as e:
-    # 			print(e.message)
-    # 			pass
-
-    # 		index = index+1
-    # 		if index>8:
-    # 			index = 0
-    # 			pass
-    # 		str = ""
-
-    # 		for x in xrange(1,index):
-    # 			str = str + "..."
-    # 			pass
-
-    # 		print('成功插入'+str)
-    # 		pass
-    # 	pass

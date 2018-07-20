@@ -31,49 +31,43 @@ sqlOperationController = SqlOperationController()
 
 #商品道具列表
 allPageList = []
-beginPage = 1
-endPage = 49
+#商品价格列表
+allAliasPriceList = []
 
 #取得最黑科技的数据
-# sourceVo = ZuiHeiKeJiConfig()
+sourceVo = ZuiHeiKeJiConfig()
 #差评的数据
-sourceVo = ChaPingConfig()
+# sourceVo = ChaPingConfig()
 
-for page in range(1,49):
-    url = sourceVo.getUrlByPage(page)
-    aliasIds = goodListController.openGoodsUrl(url) #拿到当前页所有的商品信息列表
-    #保存商品销售数据
-    aliasTitleDic = {} # 商品名称字典
-    sellInfoDic = {}  # 订单信息字典
-    sellTotalDic = {}  # 产品销量字典
-    for oneAlias in aliasIds:
-        id = oneAlias[u'alias']
-        title = oneAlias[u'title']
-        pageArr, total= sellInfoController.checkAliasInfo(id, title)  #单个商品 购买的详细信息
-        aliasTitleDic[id] = title
-        sellInfoDic[id] = pageArr
-        sellTotalDic[id] = total
+isEnd = False
+pageIndex = 1
+while isEnd==False:
+      url = sourceVo.getUrlByPage(pageIndex)
+      aliasIds = goodListController.openGoodsUrl(url) #拿到当前页所有的商品信息列表
+      if len(aliasIds)>0:
+        #保存商品销售数据
+        onePageData = sellInfoController.getOnePageAliasPrice(aliasIds, sourceVo)
+        allPageList.append(onePageData)
+        pageIndex = pageIndex + 1
+      else:
+        isEnd = True
+
+
+# # 没有数据库的话可以打开这条
+# # sqlOperationController.createTable()
+
+# for onePageData in allPageList:
+#     aliasTitleDic = onePageData['aliasTitleDic']
+#     sellInfoDic = onePageData['sellInfoDic']
+#     sellTotalDic = onePageData['sellTotalDic'] 
+#     sqlOperationController.saveAliasInfo(aliasTitleDic, sellInfoDic, sellTotalDic)
+#     pass
+
+if len(allPageList)>0:
+    # 链接数据库
+    sqlOperationController.connectSql()
+    sqlOperationController.saveAllAliasPriceInfo(allPageList)
+    sqlOperationController.closeLinkSql()
     pass
 
-    onePageData = {}
-    onePageData['aliasTitleDic'] = aliasTitleDic
-    onePageData['sellInfoDic'] = sellInfoDic
-    onePageData['sellTotalDic'] = sellTotalDic
-
-    allPageList.append(onePageData)
-    pass
-
-# 链接数据库
-sqlOperationController.connectSql()
-
-# 没有数据库的话可以打开这条
-# sqlOperationController.createTable()
-
-for onePageData in allPageList:
-    aliasTitleDic = onePageData['aliasTitleDic']
-    sellInfoDic = onePageData['sellInfoDic']
-    sellTotalDic = onePageData['sellTotalDic'] 
-    sqlOperationController.saveAliasInfo(aliasTitleDic, sellInfoDic, sellTotalDic)
-    pass
-
-sqlOperationController.closeLinkSql()
+print("欢乐的时光总是过得特别快，Happy times always had a particularly fast")

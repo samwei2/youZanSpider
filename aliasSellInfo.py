@@ -23,6 +23,7 @@ class SellInfoController():
 
         return
 
+    # 获取单个商品的所有订单详情
     def checkAliasInfo(self, aliasId, aliasTitle, allOrOne=1):
         self.__goodsId = aliasId
         self.__page = 1 #从第一页开始抓数据
@@ -42,7 +43,12 @@ class SellInfoController():
             print("html ..decode end")
 
             dataList = s['data']['list'] 
-            self.__has_next = s['data']['has_next']
+            if allOrOne!=1:
+                self.__has_next = False
+            else:
+                self.__has_next = s['data']['has_next']
+                pass
+            
             print("hes_next..", self.__has_next)
 
             if self.__total==0:
@@ -72,3 +78,42 @@ class SellInfoController():
         
 
         return self.__pageArr, self.__total
+
+    # 取得一页商品的所有订单
+    def getOnePageAliasInfo(self, aliasIds, sourceVo):
+        onePageAliasInfo = {}
+        for oneAlias in aliasIds:
+            oneAliasInfo = {}
+            id = oneAlias[u'alias']
+            title = oneAlias[u'title']
+            link  = sourceVo.getAliasLink(id)
+            pageArr, total= self.checkAliasInfo(id, title)  #单个商品 购买的详细信息
+            oneAliasInfo[id] = pageArr
+            onePageAliasInfo.append(oneAliasInfo)
+            pass
+        return onePageAliasInfo
+
+    # 获取一页商品的价格详情
+    def getOnePageAliasPrice(self, aliasIds, sourceVo):
+        onePageAliasPrice = []
+        for oneAlias in aliasIds:
+            oneAliasPrice = {}
+            id = oneAlias[u'alias']
+            title = oneAlias[u'title']
+            link  = sourceVo.getAliasLink(id)
+            pageArr, total= self.checkAliasInfo(id, title, 0)  #单个商品 购买的详细信息,这里只拿一次，拿到价格就撤
+            oneAliasPrice["id"] = id
+            oneAliasPrice["title"] = title
+            oneAliasPrice["price"] = oneAlias[u'price']
+            oneAliasPrice["total"] = total
+            oneAliasPrice["link"] = link
+            if len(pageArr)>0:
+                oneAliasPrice['the_last_buy'] = pageArr[0]['data'][u'update_time']
+            else:
+                oneAliasPrice['the_last_buy'] = "无"               
+                pass
+           
+            onePageAliasPrice.append(oneAliasPrice)
+            pass
+        # print("-------->", onePageAliasPrice)
+        return onePageAliasPrice

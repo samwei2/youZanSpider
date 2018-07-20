@@ -1,0 +1,9 @@
+CREATE TABLE `alias_price` (
+  `id` int(255) unsigned NOT NULL AUTO_INCREMENT,
+  `aliasId` varchar(255) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `price` decimal(8,2) DEFAULT NULL,
+  `total` int(255) DEFAULT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`,`aliasId`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;

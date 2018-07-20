@@ -34,3 +34,7 @@ class HtmlLoader():
       
         driver.quit()
         return soup
+
+
+# aa = HtmlLoader({})
+# print(aa.loadHtml("https://h5.youzan.com/v2/showcase/goods/allgoods?kdt_id=15311495&p=7"))

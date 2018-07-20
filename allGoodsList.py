@@ -23,15 +23,6 @@ class GoodListController():
 
     def openGoodsUrl(self, url):
         self.__url = url
-        # driver = webdriver.Chrome() 
-
-
-        # driver.get(__url)
-
-        # htmlText = driver.page_source
-
-        # soup = BeautifulSoup(htmlText,"html.parser")
-
         soup = self.__htmlLoader.loadHtml(self.__url)
         script = soup.body.script
 
