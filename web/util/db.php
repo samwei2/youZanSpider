@@ -7,7 +7,8 @@
  * @version 1.2.0
  * @modified by admpub.com
  */
-class db {
+class db
+{
 
     /**
      * *错误编号
@@ -49,70 +50,14 @@ class db {
      */
     protected static $is_commit = false;
 
-    /* 符合条件的销售数据
-     * @param $queryCon 查询条件列表
-     * */
-
-    public static function querySaleList($queryCon = false) {
-        $sql = "SELECT * FROM `" . DB_TABLE_MALL . "`";
-        if ($queryCon != false && count($queryCon) > 0) {
-            $sql = $sql . " where";
-            $index = 0;
-            $startTime = null;
-            $endTime = null;
-            $sortType = null;
-            foreach ($queryCon as $con) {
-                if($con["value"] == null)
-                {
-                    continue;
-                }
-                if ($index > 0) {
-                    $sql = $sql . " and";
-                }
-                if($con["key"] == "startTime")
-                {
-                    $startTime = $con["value"];
-                }
-                else if($con["key"] == "endTime")
-                {
-                    $endTime = $con["endTime"];
-                }
-                else if($con["key"] == "order")
-                {
-                    $sortType = $con["value"];
-                }
-                else
-                {
-                    $sql = $sql . " `" . $con["key"] . "` like \"%" . $con["value"] . "%\"";
-                }
-                $index = $index + 1;
-            }
-        }
-        if($startTime != null && $endTime != null)
-        {
-            $sql = $sql . " between '" . $startTime . "' and '" . $endTime . "'";
-        }
-        if($sortType != null)
-        {
-            $sql = $sql . " order by $sortType";
-        }
-        
-        $sql = $sql . ";";
-        $queryResult = self::query($sql);
-        if (!$queryResult) {
-            return false;
-        }
-        $saleList = self::fetch_all("id", true);
-        return $saleList;
-    }
-
     /**
      * *执行查询
      *
      * @param  $sql [string]:SQL查询语句
      * @return boolean 成功赋值并返回self::$result; 失败返回 false 如果有事务则回滚
      */
-    public static function query($sql) {
+    public static function query($sql)
+    {
         self::$sql = $sql;
         self::$result = self::$mysqli->query($sql);
         if (self::$mysqli->error) {
@@ -134,7 +79,8 @@ class db {
      * @param  $sql [string]:SQL查询语句
      * @return boolean 失败返回 false
      */
-    public static function data_scalar($sql) {
+    public static function data_scalar($sql)
+    {
         if (self::$result = self::query($sql)) {
             return self::fetch_scalar();
         } else {
@@ -149,7 +95,8 @@ class db {
      * @param  $assoc [bool]:true 返回数组; false 返回stdClass对象;默认 false
      * @return boolean 失败返回 false
      */
-    public static function data_row($sql, $assoc = false) {
+    public static function data_row($sql, $assoc = false)
+    {
         if (self::$result = self::query($sql)) {
             return self::fetch_row(self::$result, $assoc);
         } else {
@@ -165,7 +112,8 @@ class db {
      * @param  $assoc [bool]:true 返回数组; false 返回stdClass对象;默认 false
      * @return boolean 失败返回 false
      */
-    public static function data_table($sql, $key_field = false, $assoc = false) {
+    public static function data_table($sql, $key_field = false, $assoc = false)
+    {
         if (self::$result = self::query($sql)) {
             return self::fetch_all($key_field, $assoc);
         } else {
@@ -178,7 +126,8 @@ class db {
      *
      * @return boolean 没有结果返回 false
      */
-    public static function fetch_scalar() {
+    public static function fetch_scalar()
+    {
         if (!empty(self::$result)) {
             $row = self::$result->fetch_array();
             return $row[0];
@@ -194,7 +143,8 @@ class db {
      * @param  $assoc [bool]:true 返回数组; false 返回stdClass对象;默认 false
      * @return boolean 没有结果返回 false
      */
-    public static function fetch_row($result = null, $assoc = false) {
+    public static function fetch_row($result = null, $assoc = false)
+    {
         if ($result == null)
             $result = self::$result;
         if (empty($result)) {
@@ -214,7 +164,8 @@ class db {
      * @param  $assoc [bool]:true 返回数组; false 返回stdClass对象;默认 false
      * @return boolean 没有结果返回 false
      */
-    public static function fetch_all($key_field = false, $assoc = false) {
+    public static function fetch_all($key_field = false, $assoc = false)
+    {
         $rows = ($assoc) ? array() : new stdClass;
         $regI = -1;
         while ($row = self::fetch_row(self::$result, $assoc)) {
@@ -227,7 +178,7 @@ class db {
                 $rows[$regI] = $row;
             } else {
                 $rows->{
-                        $regI} = $row;
+                $regI} = $row;
             }
         }
         self::free_result();
@@ -242,7 +193,8 @@ class db {
      * @param  $where [string] 更新条件
      * @return boolean 成功 true; 失败 false
      */
-    public static function update($table, $data, $where) {
+    public static function update($table, $data, $where)
+    {
         $set = '';
         if (is_object($data) || is_array($data)) {
             foreach ($data as $k => $v) {
@@ -263,7 +215,8 @@ class db {
      * @param  $fields [string] 数据库字段，默认为 null。 为空时取 $data的 keys
      * @return boolean 成功 true; 失败 false
      */
-    public static function insert($table, $data, $fields = null) {
+    public static function insert($table, $data, $fields = null)
+    {
         if ($fields == null) {
             foreach ($data as $v) {
                 if (is_array($v)) {
@@ -293,7 +246,8 @@ class db {
      * @param  $data [array|stdClass] 待格式化的插入数据
      * @return insert 中 values 后的 SQL格式
      */
-    protected static function format_insert_data($data) {
+    protected static function format_insert_data($data)
+    {
         $output = '';
         $is_list = false;
         foreach ($data as $value) {
@@ -302,14 +256,14 @@ class db {
                 $tmp = '';
                 foreach ($value as $v) {
                     self::format_value($v);
-                    $tmp .=!empty($tmp) ? ", {$v}" : $v;
+                    $tmp .= !empty($tmp) ? ", {$v}" : $v;
                 }
                 $tmp = "(" . $tmp . ")";
-                $output .=!empty($output) ? ", {$tmp}" : $tmp;
+                $output .= !empty($output) ? ", {$tmp}" : $tmp;
                 unset($tmp);
             } else {
                 self::format_value($value);
-                $output .=!empty($output) ? ", {$value}" : $value;
+                $output .= !empty($output) ? ", {$value}" : $value;
             }
         }
         if (!$is_list)
@@ -322,7 +276,8 @@ class db {
      *
      * @param string 待格式化的字符串,格式成可被数据库接受的格式
      */
-    protected static function format_value(&$value) {
+    protected static function format_value(&$value)
+    {
         $value = trim($value);
         if ($value === null || $value == '') {
             $value = 'NULL';
@@ -337,7 +292,8 @@ class db {
     /**
      * *返回最后一次插入的ID
      */
-    public static function insert_id() {
+    public static function insert_id()
+    {
         return self::$mysqli->insert_id;
     }
 
@@ -347,7 +303,8 @@ class db {
      * @param array [数据集]
      * @return int
      */
-    public static function num_rows($result = null) {
+    public static function num_rows($result = null)
+    {
         if (is_null($result))
             $result = self::$result;
         return mysqli_num_rows($result);
@@ -360,7 +317,8 @@ class db {
      * @param  $where [string] SQL统计条件,默认为 1 查询整个表
      * @return boolean
      */
-    public static function total($table, $where = '1') {
+    public static function total($table, $where = '1')
+    {
         $sql = "SELECT count(*) FROM {$table} WHERE {$where}";
         self::query($sql);
         return self::fetch_scalar();
@@ -369,21 +327,24 @@ class db {
     /**
      * *返回当前查询SQl语句
      */
-    public static function get_sql() {
+    public static function get_sql()
+    {
         return self::$sql;
     }
 
     /**
      * *返回当前查询影响的记录数
      */
-    public static function get_nums() {
+    public static function get_nums()
+    {
         return self::$result->num_rows;
     }
 
     /**
      * *开始事物处理,关闭MYSQL的自动提交模式
      */
-    public static function commit_begin() {
+    public static function commit_begin()
+    {
         self::$is_error = false;
         self::$mysqli->autocommit(false); //使用事物处理,不自动提交
         self::$is_commit = true;
@@ -392,7 +353,8 @@ class db {
     /**
      * *提交事物处理
      */
-    public static function commit_end() {
+    public static function commit_end()
+    {
         if (self::$is_commit) {
             self::$mysqli->commit();
         }
@@ -404,14 +366,16 @@ class db {
     /**
      * *回滚事物处理
      */
-    public static function rollback() {
+    public static function rollback()
+    {
         self::$mysqli->rollback();
     }
 
     /**
      * *释放数据集
      */
-    public static function free_result($result = null) {
+    public static function free_result($result = null)
+    {
         if (is_null($result))
             $result = self::$result;
         @mysqli_free_result($result);
@@ -423,14 +387,16 @@ class db {
      * @param string 数据库名称
      * @return boolean
      */
-    public static function select_db($dbname) {
+    public static function select_db($dbname)
+    {
         return self::$mysqli->select_db($dbname);
     }
 
     /**
      * *连接Mysql
      */
-    public static function connect() {
+    public static function connect()
+    {
         if (is_null(self::$mysqli)) {
             self::$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
             if (mysqli_connect_errno()) {
@@ -448,7 +414,8 @@ class db {
      *
      * @param  $message [string] 产生的日志消息
      */
-    protected static function log($message) {
+    protected static function log($message)
+    {
         if (self::$OnErrorShow) {
             echo($message . '<div>' . self::$sql . '</div>');
         }

@@ -9,23 +9,30 @@
             {
                 var startTime = form.startTime.value;
                 var endTime = form.endTime.value;
-                var startYear = Number(startTime.substring(0, 4));
-                var startMonth = Number(startTime.substring(5, 7));
-                var startDay = Number(startTime.substring(8, 10));
-                var startHours = Number(startTime.substring(11, 13));
-                var startMinutes = Number(endTime.substring(14, 16));
-                var endYear = Number(endTime.substring(0, 4));
-                var endMonth = Number(endTime.substring(5, 7));
-                var endDay = Number(endTime.substring(8, 10));
-                var endHours = Number(endTime.substring(11, 13));
-                var endMinutes = Number(endTime.substring(14, 16));
-                
-                if(Number(startYear+""+startMonth+""+startDay+""+startHours+""+startMinutes) > Number(endYear+""+endMonth+""+endDay+""+endHours+""+endMinutes))
+                startTime = startTime.replace(/\s+|\-|\:/g, "");
+                endTime = endTime.replace(/\s+|\-|\:/g, "");
+
+                if(Number(startTime) > Number(endTime))
                 {
                     alert("开始时间不能晚于结束时间");
                     return false;
                 }
-                
+
+                var lowPrice = parseFloat(form.lowPrice.value);
+                var highPrice = parseFloat(form.highPrice.value);
+                if((lowPrice >= 0 && highPrice >= lowPrice) == false)
+                {
+                    alert("输入的价格不正确");
+                    return false;
+                }
+                var lowNum = parseFloat(form.lowNum.value);
+                var highNum = parseFloat(form.highNum.value);
+                if((lowNum >= 0 && highNum >= lowNum) == false)
+                {
+                    alert("输入的销量不正确");
+                    return false;
+                }
+
                 return true;
             }
         </script>
@@ -45,15 +52,35 @@
                     <label>【选择时间段】</label>
                     <br>
                     从
-                    <input id="startTime" name="startTime" class="flatpickr" data-utc="true" data-enable-time="true" data-allow-input="true" />
+                    <input id="startTime" name="startTime" class="flatpickr" data-utc="true" data-enable-time="true" data-allow-input="true" data-default-date="2018-01-01 01:30" />
                     <!--data-default-date="2016-03-01 03:30:00 -0300"-->
                     至
-                    <input id="endTime" name="endTime" class="flatpickr" data-utc="true" data-enable-time="true" data-allow-input="true" />
+                    <input id="endTime" name="endTime" class="flatpickr" data-utc="true" data-enable-time="true" data-allow-input="true" data-default-date="2018-12-01 01:30" />
+                </div>
+                <br>
+                <div>
+                    <label>【售价区间】</label>
+                    <input id="lowPrice" name="lowPrice" value="0" />
+                    -
+                    <input id="highPrice" name="highPrice" value="1000" />
+                </div>
+                <br>
+                <div>
+                    <label>【销量】</label>
+                    <input id="lowNum" name="lowNum" value="0" />
+                    -
+                    <input id="highNum" name="highNum" value="1000" />
                 </div>
                 <br>
                 <div>
                     <label>【搜索关键词】</label>
-                    <input id="searchStr" name="searchStr" value="春儿"/>
+                    <input id="searchStr" name="searchStr" value="测试"/>
+                </div>
+                <br>
+                <div>
+                    <label>【排序】</label>
+                    <input type="radio" name="order" value="asc" checked="true">正序</input>
+                    <input type="radio" name="order" value="desc">倒序</input>
                 </div>
                 <br>
                 <div>
@@ -61,7 +88,7 @@
                 </div>
             </div>
         </form> 
-        <script>
+        <script type="text/javascript">
             document.getElementById("startTime").flatpickr();
             document.getElementById("endTime").flatpickr();
 
