@@ -35,39 +35,28 @@ function main()
     include(dirname(__FILE__) . "/config/$shopName.php");
 
     $sql = createSql($startTime, $endTime, $lowPrice, $highPrice, $lowNum, $highNum, $searchStr, $order);
-    var_dump($sql);
-
-
-//    $con = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
-//    $queryResult = $con->query($sql);
-//    $row = $queryResult->fetch_assoc();
-//    var_dump($row);
-
-
-
-
-//    db::connect();
-//    $queryResult = db::query($sql);
-//    $dataList = db::fetch_all("id", true);
-//    if ($dataList != false) {
-//        $count = count($dataList);
-//        if ($count < 1) {
-//            echo "
-//                    <script type='text/javascript'>
-//                        alert('没有找到符合当前搜索条件的数据');
-//                        top.location='index.php';
-//                    </script>";
-//        }
-//        foreach ($dataList as $item) {
-//            print("流水：" . $item["id"] . "\t\t买家:" . $item["buyer"] . "\t\t时间:" . $item["time"] . "\t\t购买数量:" . $item["buyCount"] . "\t\t商品id:" . $item["aliasId"] . "\t\t售价:" . $item["price"] . "\t\t标题:" . $item["title"] . "</br>");
-//        }
-//    } else {
-//        echo "
-//              <script type='text/javascript'>
-//                alert('没有找到符合当前搜索条件的数据!!!');
-//                top.location='index.php';
-//              </script>";
-//    }
+    db::connect();
+    $queryResult = db::query($sql);
+    $dataList = db::fetch_all("id", true);
+    if ($dataList != false) {
+        $count = count($dataList);
+        if ($count < 1) {
+            echo "
+                    <script type='text/javascript'>
+                        alert('没有找到符合当前搜索条件的数据');
+                        top.location='index.php';
+                    </script>";
+        }
+        foreach ($dataList as $item) {
+            print("流水：" . $item["id"] . "\t\t买家:" . $item["buyer"] . "\t\t时间:" . $item["time"] . "\t\t购买数量:" . $item["buyCount"] . "\t\t商品id:" . $item["aliasId"] . "\t\t售价:" . $item["price"] . "\t\t标题:" . $item["title"] . "</br>");
+        }
+    } else {
+        echo "
+              <script type='text/javascript'>
+                alert('没有找到符合当前搜索条件的数据!!!');
+                top.location='index.php';
+              </script>";
+    }
 }
 
 main();
