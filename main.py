@@ -35,14 +35,14 @@ allPageList = []
 allAliasPriceList = []
 
 #取得最黑科技的数据
-# sourceVo = ZuiHeiKeJiConfig()
+sourceVo = ZuiHeiKeJiConfig()
 #差评的数据
-sourceVo = ChaPingConfig()
+# sourceVo = ChaPingConfig()
 
 isEnd = False
 pageIndex = 1
 while isEnd==False:
-      # isEnd = True
+      isEnd = True
       url = sourceVo.getUrlByPage(pageIndex)
       aliasIds = goodListController.openGoodsUrl(url) #拿到当前页所有的商品信息列表
       if len(aliasIds)>0:
@@ -55,12 +55,12 @@ while isEnd==False:
         isEnd = True
 
 
-# # 没有数据库的话可以打开这条
-# # sqlOperationController.createTable()
-
 if len(allPageList)>0:
     # 链接数据库
     sqlOperationController.connectSql()
+    # 判断数据库是否存在
+    sqlOperationController.checkOrCreateTable(sourceVo.getTableName())
+    sqlOperationController.selectTable(sourceVo.getTableName())
     sqlOperationController.saveAllAliasInfo(allPageList)
     # sqlOperationController.saveAllAliasPriceInfo(allPageList)
     sqlOperationController.closeLinkSql()

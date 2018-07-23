@@ -5,6 +5,7 @@ import pymysql.cursors
 class SqlOperationController():
     """docstring for sqlOperation"""
     __cursor = None
+    __selectTableName = ""
     def __init__(self):
         pass
 
@@ -21,10 +22,10 @@ class SqlOperationController():
         pass
 
     # 创建表
-    def createTable(self):
+    def createTable(self, tableName):
         self.__cursor = self.__connect.cursor()
         sql_create = '''
-           CREATE TABLE `aliasinfo` (
+           CREATE TABLE `%s` (
               `id` int(255) unsigned NOT NULL AUTO_INCREMENT,
               `aliasId` varchar(255) DEFAULT NULL,
               `buyer` varchar(255) DEFAULT NULL,
@@ -36,8 +37,10 @@ class SqlOperationController():
               PRIMARY KEY (`id`)
             ) ENGINE=InnoDB AUTO_INCREMENT=208 DEFAULT CHARSET=utf8;
         '''
-        self.__cursor.execute(sql_create)
+        data = (tableName)
+        self.__cursor.execute(sql_create % data)
         self.__connect.commit()
+        print("dataBase table create completed:", tableName)
     pass
 
     # 存储所有订单信息
@@ -60,9 +63,9 @@ class SqlOperationController():
                 # print(order)
                 dealUid  = order['uid']
                 orderData = order['data']
-                sql = "INSERT INTO aliasInfo (aliasId, time, buyCount, buyer, title, price, link) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')"
+                sql = "INSERT INTO "+self.__selectTableName+" (aliasId, time, buyCount, buyer, title, price, link) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')"
                 data = (dealUid, orderData[u'update_time'], orderData[u'item_num'], orderData[u'nickname'], title, orderData[u'item_price'], link)
-                insertCode = self.sqlInsert(data, sql, "aliasinfo", "aliasId")
+                insertCode = self.sqlInsert(data, sql, self.__selectTableName, "aliasId")
                 if insertCode==0:
                     index = index + 1
                     if index > 8:
@@ -174,3 +177,37 @@ class SqlOperationController():
             print("closeLinkSql error", e.message)
             pass
         pass
+
+    # 判断是否存在数据库表
+    def isHasTable(self, tableName):
+        self.__cursor = self.__connect.cursor()
+        bHasData = False
+        try:
+            sql = "SELECT table_name FROM information_schema.TABLES WHERE table_name ='%s'; "
+            data = (tableName)
+            self.__cursor.execute(sql % data)
+            self.__connect.commit()
+            bHasData = len(self.__cursor.fetchall()) > 0
+            pass
+        except Exception as e:
+            print("error", tableName + " has not CREATE")
+            pass
+        return bHasData
+
+    # 查询并创建数据表
+    def checkOrCreateTable(self, tableName):
+        bHasTable = self.isHasTable( tableName )
+        print(bHasTable)
+        if bHasTable is False:
+            self.createTable(tableName)
+            pass
+        pass
+
+    # 设置要链接的表名
+    def selectTable(self, tableName):
+        self.__selectTableName = tableName
+        pass
+
+# aa = SqlOperationController()
+# aa.connectSql()
+# aa.checkOrCreateTable("alias_chaping")

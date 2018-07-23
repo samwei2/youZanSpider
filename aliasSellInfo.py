@@ -39,7 +39,12 @@ class SellInfoController():
             res = resp.content.decode('utf-8')
 
             print("html ..decodeing")
-            s = json.loads(res)
+            try:
+                s = json.loads(res)
+            except Exception as e:
+                print("you must be change cookies file")
+                pass
+           
             print("html ..decode end")
 
             dataList = s['data']['list'] 
@@ -87,7 +92,7 @@ class SellInfoController():
             id = oneAlias[u'alias']
             title = oneAlias[u'title']
             link  = sourceVo.getAliasLink(id)
-            pageArr, total= self.checkAliasInfo(id, title)  #单个商品 购买的详细信息
+            pageArr, total= self.checkAliasInfo(id, title, 0)  #单个商品 购买的详细信息
             oneAliasInfo['id'] = id
             oneAliasInfo['aliasList'] = pageArr
             oneAliasInfo['title'] = title

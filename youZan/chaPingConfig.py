@@ -6,6 +6,7 @@ class ChaPingConfig(YouZanWebBaseConfig):
 	"""docstring for AA"""
 	def __init__(self):
 		self.kdt_id = "15311495"
+		self.dataBaseTable = "alias_chaping"
 		print("现在开始装配  差评数据。。。。。。。。")
 		print("首页地址："+self.getUrlByPage(1))
 		pass
