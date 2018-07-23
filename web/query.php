@@ -35,8 +35,20 @@ function main()
     include(dirname(__FILE__) . "/config/$shopName.php");
 
     $sql = createSql($startTime, $endTime, $lowPrice, $highPrice, $lowNum, $highNum, $searchStr, $order);
-    db::connect();
-    $dataList = db::data_table($sql,"id", true);
+    var_dump($sql);
+
+
+//    $con = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
+//    $queryResult = $con->query($sql);
+//    $row = $queryResult->fetch_assoc();
+//    var_dump($row);
+
+
+
+
+//    db::connect();
+//    $queryResult = db::query($sql);
+//    $dataList = db::fetch_all("id", true);
 //    if ($dataList != false) {
 //        $count = count($dataList);
 //        if ($count < 1) {
