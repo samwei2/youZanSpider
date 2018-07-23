@@ -24,16 +24,17 @@ class SqlOperationController():
     def createTable(self):
         self.__cursor = self.__connect.cursor()
         sql_create = '''
-            CREATE TABLE `aliasinfo` (
+           CREATE TABLE `aliasinfo` (
               `id` int(255) unsigned NOT NULL AUTO_INCREMENT,
+              `aliasId` varchar(255) DEFAULT NULL,
               `buyer` varchar(255) DEFAULT NULL,
               `time` varchar(255) DEFAULT NULL,
               `buyCount` int(255) DEFAULT NULL,
-              `aliasId` varchar(255) DEFAULT NULL,
               `price` decimal(8,2) DEFAULT NULL,
               `title` varchar(255) DEFAULT NULL,
+              `link` varchar(255) DEFAULT NULL,
               PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB AUTO_INCREMENT=963 DEFAULT CHARSET=utf8;
+            ) ENGINE=InnoDB AUTO_INCREMENT=208 DEFAULT CHARSET=utf8;
         '''
         self.__cursor.execute(sql_create)
         self.__connect.commit()
@@ -42,76 +43,44 @@ class SqlOperationController():
     # 存储所有订单信息
     def saveAllAliasInfo(self, allPageList):
         for onePageData in allPageList:
-            sellInfoDic = onePageData['sellInfoDic']
-            self.saveAliasInfo(sellInfoDic)
+            # sellInfoDic = onePageData['sellInfoDic']
+            self.saveAliasInfo(onePageData)
             pass
         pass
 
-    def saveAliasInfo(self, sellInfoDic):
+    def saveAliasInfo(self, onePageData):
         # 获取游标
         self.__cursor = self.__connect.cursor()
         index = 0
+        for oneAliasObj in onePageData:
+            orderArr = oneAliasObj["aliasList"]
+            title    = oneAliasObj['title']  # .decode('unicode_escape')
+            link     = oneAliasObj['link'] 
+            for order in orderArr:
+                # print(order)
+                dealUid  = order['uid']
+                orderData = order['data']
+                sql = "INSERT INTO aliasInfo (aliasId, time, buyCount, buyer, title, price, link) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')"
+                data = (dealUid, orderData[u'update_time'], orderData[u'item_num'], orderData[u'nickname'], title, orderData[u'item_price'], link)
+                insertCode = self.sqlInsert(data, sql, "aliasinfo", "aliasId")
+                if insertCode==0:
+                    index = index + 1
+                    if index > 8:
+                        index = 0
+                        pass
 
-        for key in sellInfoDic:
-            # print(sellInfoDic[key])
-            # # 一件商品的数据
-            sellInfoList = sellInfoDic[key]
-            if sellInfoList is None or len(sellInfoList) == 0:
-                continue
-
-            for sellInfo in sellInfoList:
-                infoData = sellInfo['data']
-                dealUid = sellInfo['uid']
-                title = sellInfo['title']  # .decode('unicode_escape')
-                data = (infoData[u'nickname'], infoData[u'update_time'], infoData[u'item_num'], dealUid, title,
-                        infoData[u'item_price'])
-                # print("ready write data", data)
-                # print(dealUid, "is ready write to sql")
-
-                bHasData = False
-                try:
-                    sql = "SELECT aliasId FROM aliasInfo WHERE aliasId = '%s'"
-                    uidData = (dealUid)
-                    self.__cursor.execute(sql % uidData)
-                    bHasData = len(self.__cursor.fetchall()) > 0
-                    pass
-                except Exception as e:
-                    print("SELECT error", e.message)
-                    pass
-
-                if bHasData is False:
-                    try:
-                        # 插入数据
-                        sql = "INSERT INTO aliasInfo (buyer, time, buyCount, aliasId, title, price) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')"
-                        self.__cursor.execute(sql % data)
-                        self.__connect.commit()
-
-                        index = index + 1
-                        if index > 8:
-                            index = 0
-                            pass
-                        str = ""
-
-                        for x in xrange(1, index):
-                            str = str + "..."
-                            pass
+                    str = ""
+                    for x in xrange(1, index):
+                        str = str + "..."
+                        pass
 
                         print('成功插入' + str)
-                        pass
-                    except Exception as e:
-                        print("INSERT error", e.message)
-                        pass
-                        print("sql not data ,we will write in ....")
-                    pass
                 else:
-                    print("data is has , we will updata...")
-                # sql = "UPDATE aliasInfo  set buyer = '%s'"
-                # self.__cursor.execute(sql % ("aaa"))
-                # self.__connect.commit()
+                    index = 0
+                    print('insert code:', insertCode)
+                    pass
                 pass
-
-            print('录入结束')
-        pass
+            pass
 
     # 存储所有商品价格
     def saveAllAliasPriceInfo(self, allPageList):
@@ -146,7 +115,7 @@ class SqlOperationController():
                 print('成功插入' + str)
             else:
                 index = 0
-                print('插入失败 code:', insertCode)
+                print('insert code:', insertCode)
                 pass
             pass
         pass

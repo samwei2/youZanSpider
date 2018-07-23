@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 import re
 from htmlLoader import HtmlLoader
 from bs4 import BeautifulSoup
-import js2xml
+# import js2xml
 
 class GoodListController():
     

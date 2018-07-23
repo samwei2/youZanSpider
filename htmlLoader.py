@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 import re
 
 from bs4 import BeautifulSoup
-import js2xml
+# import js2xml
 import sys
 
 class HtmlLoader():
@@ -22,8 +22,13 @@ class HtmlLoader():
 
     def loadHtml(self, url):
         self.__url = url
-        driver = webdriver.Chrome() 
+        # driver = webdriver.Chrome() 
+        chrome_options = webdriver.ChromeOptions()
+        prefs = {"profile.managed_default_content_settings.images":2} # 浏览器不显示图片
+        chrome_options.add_experimental_option("prefs",prefs)
 
+                    
+        driver = webdriver.Chrome(chrome_options=chrome_options)
 
         driver.get(self.__url)
         print("webdriver get url--->", self.__url)

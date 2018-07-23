@@ -81,14 +81,17 @@ class SellInfoController():
 
     # 取得一页商品的所有订单
     def getOnePageAliasInfo(self, aliasIds, sourceVo):
-        onePageAliasInfo = {}
+        onePageAliasInfo = []
         for oneAlias in aliasIds:
             oneAliasInfo = {}
             id = oneAlias[u'alias']
             title = oneAlias[u'title']
             link  = sourceVo.getAliasLink(id)
             pageArr, total= self.checkAliasInfo(id, title)  #单个商品 购买的详细信息
-            oneAliasInfo[id] = pageArr
+            oneAliasInfo['id'] = id
+            oneAliasInfo['aliasList'] = pageArr
+            oneAliasInfo['title'] = title
+            oneAliasInfo['link'] = link
             onePageAliasInfo.append(oneAliasInfo)
             pass
         return onePageAliasInfo

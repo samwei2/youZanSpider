@@ -2,7 +2,7 @@
 from allGoodsList import GoodListController
 from aliasSellInfo import SellInfoController
 from mySqlController import SqlOperationController
-import pymysql.cursors
+# import c.cursors
 import json
 
 from youZan.zuiHeiKeJiConfig import ZuiHeiKeJiConfig
@@ -35,18 +35,20 @@ allPageList = []
 allAliasPriceList = []
 
 #取得最黑科技的数据
-sourceVo = ZuiHeiKeJiConfig()
+# sourceVo = ZuiHeiKeJiConfig()
 #差评的数据
-# sourceVo = ChaPingConfig()
+sourceVo = ChaPingConfig()
 
 isEnd = False
 pageIndex = 1
 while isEnd==False:
+      # isEnd = True
       url = sourceVo.getUrlByPage(pageIndex)
       aliasIds = goodListController.openGoodsUrl(url) #拿到当前页所有的商品信息列表
       if len(aliasIds)>0:
         #保存商品销售数据
-        onePageData = sellInfoController.getOnePageAliasPrice(aliasIds, sourceVo)
+        # onePageData = sellInfoController.getOnePageAliasPrice(aliasIds, sourceVo)
+        onePageData = sellInfoController.getOnePageAliasInfo(aliasIds, sourceVo)
         allPageList.append(onePageData)
         pageIndex = pageIndex + 1
       else:
@@ -56,17 +58,11 @@ while isEnd==False:
 # # 没有数据库的话可以打开这条
 # # sqlOperationController.createTable()
 
-# for onePageData in allPageList:
-#     aliasTitleDic = onePageData['aliasTitleDic']
-#     sellInfoDic = onePageData['sellInfoDic']
-#     sellTotalDic = onePageData['sellTotalDic'] 
-#     sqlOperationController.saveAliasInfo(aliasTitleDic, sellInfoDic, sellTotalDic)
-#     pass
-
 if len(allPageList)>0:
     # 链接数据库
     sqlOperationController.connectSql()
-    sqlOperationController.saveAllAliasPriceInfo(allPageList)
+    sqlOperationController.saveAllAliasInfo(allPageList)
+    # sqlOperationController.saveAllAliasPriceInfo(allPageList)
     sqlOperationController.closeLinkSql()
     pass
 
