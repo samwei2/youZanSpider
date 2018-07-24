@@ -13,6 +13,6 @@ define("DB_NAME", "alias");
 define("DB_USER", "root");
 define("DB_PASS", "root");
 define("DB_TABLE_MALL", "aliasinfo");
-define("DB_CHARSET", "utf-8");
+define("DB_CHARSET", "utf8");
 
 
