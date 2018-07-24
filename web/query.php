@@ -6,8 +6,6 @@
  * and open the template in the editor.
  */
 
-require_once(dirname(__FILE__) . "/util/db.php");
-
 function createSql($startTime, $endTime, $lowPrice, $highPrice, $lowNum, $highNum, $searchStr, $order)
 {
     $sql = "SELECT * FROM `" . DB_TABLE_MALL . "`";
