@@ -1,12 +1,15 @@
 #coding=utf-8
 import time
+import threading
+# import sleep
 from spiderTaskController import SpiderTaskController
 # 蜘蛛程序主循环
 class SpiderCore():
 	"""docstring for SpiderCore"""
 	__lastTime = 0
 	__overflow = 0
-	__frameTime = 16  #1帧
+	__frameTime = 16
+	
 	
 	def init(self):
 		self.__lastTime = self.getCurTime()
@@ -15,18 +18,34 @@ class SpiderCore():
 	
 	# 爬虫主循环
 	def start(self):
-		while 1:
-			_addTime = self.getCurTime() - self.__lastTime + self.__overflow
+		import threadTimer
+
+
+		def toRound(curTime, lastTime):
+			self.__lastTime = curTime
+			_addTime = curTime - lastTime + self.__overflow
 			if _addTime>=self.__frameTime:
-				self.__overflow = _addTime - self.__frameTime
-				self.__lastTime = self.getCurTime()
+				overflow = _addTime - self.__frameTime
 				# print(self.__lastTime, _addTime)
-				self.spiderTaskController.updateTask(self.__lastTime, _addTime) #
-		
-	
+				self.spiderTaskController.updateTask(self.__lastTime, _addTime) 
+			pass
+		self.__lastTime = int(round(time.time() * 1000))
+		threadTimer.heart_beat(toRound,self.__lastTime)
+
+	def getSpiderTaskController(self):
+		return self.spiderTaskController
+
+
 	def getCurTime(self):
 		return int(round(time.time() * 1000))
 
-dd = SpiderCore()
-dd.init()
-dd.start()
+# def printd(param1, param2):
+# 	print(param1, param2)
+# 	pass
+# dd = SpiderCore()
+# dd.init()
+# dd.start()
+# aa = SpiderTaskController()
+# aa.addTaskByType("ADD_TASK",{'func':printd, "param":(1,2)})
+# print("IIIIIIIIIi")
+# aa.addTaskByType("ARECORD_PAGE",{'func':printd, "param":(22222,000000)})
