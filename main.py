@@ -9,9 +9,9 @@ import cookieTool
 from youZan.zuiHeiKeJiConfig import ZuiHeiKeJiConfig
 from youZan.chaPingConfig import ChaPingConfig
 
-import urlPool
 import core.spiderCore
 import allPageListPool
+import urlVo
 
 # 全局头
 headers = {
@@ -39,8 +39,6 @@ sourceVo = ZuiHeiKeJiConfig()
 #差评的数据
 # sourceVo = ChaPingConfig()
 
-
-urlPool = urlPool.UrlPool()
 isEnd = False
 hasCookie = False
 pageIndex = 1
@@ -52,7 +50,8 @@ while isEnd==False:
           hasCookie = True
 
       aliasIds = goodListController.openGoodsUrl(url) #拿到当前页所有的商品信息列表
-      urlPool.appendUrlVo(url, aliasIds)
+      urlVo =  urlVo.UrlVo(url, aliasIds)
+      allPageListPool.AllPageListPool().getInstance().appendUrlVo(urlVo)
       if len(aliasIds)>0:
       #   #保存商品销售数据
           def decodeOnPageDataFunc(aliasIds, sourceVo):
@@ -83,7 +82,7 @@ while isEnd==False:
           print("欢乐的时光总是过得特别快，Happy times always had a particularly fast")
 
 
-# print(urlPool.getLen(),urlPool.getUrlVo().getParam())
+# print(oAllPageListPool.getLen(),oAllPageListPool.getUrlVo().getParam())
 
 # if len(allPageList)>0:
 #     # 链接数据库

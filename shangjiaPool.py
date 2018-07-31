@@ -1,9 +1,10 @@
+#coding=utf-8
 # 存储商家池
 class ShangJiaPool():
 	"""docstring for ShangJiaPool"""
 	__shangjiaList = ()
 	def __init__(self):
-		super(ShangJiaPool, self).__init__()
+		pass
 	
 	# 添加一个新的商铺	
 	def addShangJia(self, vo):
