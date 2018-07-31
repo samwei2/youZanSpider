@@ -2,6 +2,8 @@
 import requests
 import re
 import json
+import cookieTool
+import urllib2
 
 class SellInfoController():
     """docstring for SellInfoController"""
@@ -12,10 +14,10 @@ class SellInfoController():
     __pageArr = [] #当前商品订单数据总和
     __total = 0
     __has_next = True
+    __cookies = None
 
-    def __init__(self, headers, cookies):
+    def __init__(self, headers):
         self.__headers = headers
-        self.__cookies = cookies
         self.initData()
         return
         
@@ -35,8 +37,12 @@ class SellInfoController():
         while self.__has_next==True:
             url = self.__urlPath + self.__goodsId + self.__pageTab + str(self.__page)
             print("url ready...", url)
-            resp = requests.get(url, headers=self.__headers, cookies=self.__cookies)
-            res = resp.content.decode('utf-8')
+            if self.__cookies==None:
+                self.__cookies = cookieTool.CookieTool.getInstance().readCookie()
+            # resp = requests.get(url, headers=self.__headers, cookies=self.__cookies)
+            opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.__cookies))
+            response = opener.open(url)
+            res = response.read().decode('utf-8')
 
             print("html ..decodeing")
             try:

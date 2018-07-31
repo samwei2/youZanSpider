@@ -4,6 +4,7 @@ from aliasSellInfo import SellInfoController
 from mySqlController import SqlOperationController
 # import c.cursors
 import json
+import cookieTool
 
 from youZan.zuiHeiKeJiConfig import ZuiHeiKeJiConfig
 from youZan.chaPingConfig import ChaPingConfig
@@ -17,24 +18,14 @@ headers = {
     "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36 QIHU 360SE"
 }
 
-#请求头
-f = open('foo.txt')
-cookies={}
-for line in f.read().split(';'): 
-    name,value=line.strip().split('=',1)
-    cookies[name]=value
-
-# print cookies
-
 #商品控制
 goodListController = GoodListController(headers)
 
-sellInfoController = SellInfoController(headers, cookies)
+sellInfoController = SellInfoController(headers)
 
 spiderCore = core.spiderCore.SpiderCore()
 spiderCore.init()
 spiderCore.start()
-print("coun+++++++++++====t")
 
 sqlOperationController = SqlOperationController()
 
@@ -51,10 +42,15 @@ sourceVo = ZuiHeiKeJiConfig()
 
 urlPool = urlPool.UrlPool()
 isEnd = False
+hasCookie = False
 pageIndex = 1
 while isEnd==False:
       # isEnd = True
       url = sourceVo.getUrlByPage(pageIndex)
+      if hasCookie==False:
+          cookieTool.CookieTool.getInstance().saveUrlCookie(url)
+          hasCookie = True
+
       aliasIds = goodListController.openGoodsUrl(url) #拿到当前页所有的商品信息列表
       urlPool.appendUrlVo(url, aliasIds)
       if len(aliasIds)>0:
@@ -79,12 +75,13 @@ while isEnd==False:
               pass
           taskVo = {"func":decodeOnPageDataFunc, "param":(aliasIds, sourceVo,)}
           spiderCore.getSpiderTaskController().addTaskByType("ADD_TASK", taskVo)
-      #   # onePageData = sellInfoController.getOnePageAliasPrice(aliasIds, sourceVo)
-      #   onePageData = sellInfoController.getOnePageAliasInfo(aliasIds, sourceVo)
-      #   allPageList.append(onePageData)
           pageIndex = pageIndex + 1
       else:
           isEnd = True
+          spiderCore.stop()
+          # spiderCore.start()
+          print("欢乐的时光总是过得特别快，Happy times always had a particularly fast")
+
 
 # print(urlPool.getLen(),urlPool.getUrlVo().getParam())
 
@@ -99,4 +96,4 @@ while isEnd==False:
 #     sqlOperationController.closeLinkSql()
 #     pass
 
-print("欢乐的时光总是过得特别快，Happy times always had a particularly fast")
+

@@ -1,0 +1,9 @@
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+.youzan.com	TRUE	/	FALSE	1564590553	DO_CHECK_YOU_VERSION	1
+.youzan.com	TRUE	/	FALSE	1564590553	KDTSESSIONID	YZ474016714959380480YZgNsbwrkJ
+.youzan.com	TRUE	/	FALSE	1535646553	_kdt_id_	16975645
+.youzan.com	TRUE	/	FALSE		nobody_sign	YZ474016714959380480YZgNsbwrkJ
+.youzan.com	TRUE	/	FALSE	1535646553	yz_ep_page_type_track	iDJ3GNJDHbhHtOl6W3j3ZA%3D%3D
