@@ -8,6 +8,8 @@
 
 function createSql($startTime, $endTime, $lowPrice, $highPrice, $lowNum, $highNum, $searchStr, $order)
 {
+    $a = getCutYearTime($startTime);
+    $b = getCutYearTime($endTime);
     $sql = "SELECT * FROM `" . DB_TABLE_MALL . "`";
     $sql = $sql . " where";
     $sql = $sql . " (`title` like \"%$searchStr%\")";
@@ -16,7 +18,7 @@ function createSql($startTime, $endTime, $lowPrice, $highPrice, $lowNum, $highNu
     $sql = $sql . " and";
     $sql = $sql . " (`buyCount` > $lowNum and `buyCount` < $highNum)";
     $sql = $sql . " and";
-    $sql = $sql . " (`time` between '$startTime' and '$endTime')";
+    $sql = $sql . " ((`time` between '".$a."' and '".$b."')"." or "."(`time` between '".$startTime."' and '".$endTime."'))";
     $sql .= " order by '$order';";
     return $sql;
 }
@@ -48,7 +50,10 @@ function printResult($queryResult, $hasData)
     echo("</table>");
     return $hasData;
 }
-
+function getCutYearTime($inputTime)
+{
+    return substr($inputTime,5);
+}
 function main()
 {
     $shopName = $_REQUEST['shopName'];
@@ -60,7 +65,6 @@ function main()
     $highNum = $_REQUEST['highNum'];
     $searchStr = $_REQUEST['searchStr'];
     $order = $_REQUEST['order'];
-
     include(dirname(__FILE__) . "/config/$shopName.php");
 
     $con = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
@@ -68,6 +72,9 @@ function main()
         $message = sprintf("Database Connect failed:%s\r\n", mysqli_connect_error());
         echo($message."<br>");
         exit();
+    }else
+    {
+        printf('sql connect.........,%s,%s,%s,%s,%s,%s,%s,%s',$startTime, $endTime, $lowPrice, $highPrice, $lowNum, $highNum, $searchStr, $order);
     }
     mysqli_set_charset($con,DB_CHARSET);
 

@@ -8,10 +8,11 @@ import cookieTool
 
 from youZan.zuiHeiKeJiConfig import ZuiHeiKeJiConfig
 from youZan.chaPingConfig import ChaPingConfig
+import youZan.jiGuoYouPinConfig
 
 import core.spiderCore
 import allPageListPool
-import urlVo
+from urlVo import UrlVo
 
 # 全局头
 headers = {
@@ -35,9 +36,11 @@ allPageList = []
 allAliasPriceList = []
 
 #取得最黑科技的数据
-sourceVo = ZuiHeiKeJiConfig()
+# sourceVo = ZuiHeiKeJiConfig()
 #差评的数据
 # sourceVo = ChaPingConfig()
+#取得极果优品的数据
+sourceVo = youZan.jiGuoYouPinConfig.JiGuoYouPinConfig()
 
 isEnd = False
 hasCookie = False
@@ -50,7 +53,7 @@ while isEnd==False:
           hasCookie = True
 
       aliasIds = goodListController.openGoodsUrl(url) #拿到当前页所有的商品信息列表
-      urlVo =  urlVo.UrlVo(url, aliasIds)
+      urlVo =  UrlVo(url, aliasIds)
       allPageListPool.AllPageListPool().getInstance().appendUrlVo(urlVo)
       if len(aliasIds)>0:
       #   #保存商品销售数据

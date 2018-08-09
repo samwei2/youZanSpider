@@ -9,9 +9,9 @@
             {
                 var startTime = form.startTime.value;
                 var endTime = form.endTime.value;
+                <!--data-default-date="2016-03-01 03:30:00"-->
                 startTime = startTime.replace(/\s+|\-|\:/g, "");
                 endTime = endTime.replace(/\s+|\-|\:/g, "");
-
                 if(Number(startTime) > Number(endTime))
                 {
                     alert("开始时间不能晚于结束时间");
@@ -32,7 +32,6 @@
                     alert("输入的销量不正确");
                     return false;
                 }
-
                 return true;
             }
         </script>
